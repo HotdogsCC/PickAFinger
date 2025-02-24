@@ -13,9 +13,11 @@ public class FingerManager : MonoBehaviour
         Pinky
     }
 
-    [SerializeField] private List<Finger> hand;
+    
+    private List<Finger> hand = new List<Finger>();
     private Dictionary<Finger, int> FingerToInputNum = new Dictionary<Finger, int>();
-    private Minigame currentMinigame;
+    [SerializeField] private Minigame currentMinigame;
+    [SerializeField] private List<GameObject> fingerGameObjects;
 
     private void Start()
     {
@@ -27,22 +29,20 @@ public class FingerManager : MonoBehaviour
         hand.Add(Finger.Thumb);
 
         //Initialises FingerToInputNum Dictionary at 0
-        foreach (Finger finger in hand)
-        {
-            FingerToInputNum.Add(finger, 0);
-        }
+        ResetFingerInputs();
+
+        //enables finger chopping
+        SetFingerChopping(true);
 
         //TEMP CODE FOR TESTING
-        FingerToInputNum[Finger.Middle] = 1;
+        FingerToInputNum[Finger.Ring] = 1;
+        FingerToInputNum[Finger.Pointer] = 2;
     }
 
     public void RemoveFinger(Finger finger)
     {
         hand.Remove(finger);
-        foreach(Finger _fing in hand)
-        {
-            Debug.Log(_fing);
-        }
+        SetFingerChopping(false);
     }
 
     private void Update()
@@ -111,12 +111,22 @@ public class FingerManager : MonoBehaviour
         }
     }
 
-    private void ResetFingerInputs()
+    //Resets finger input values, ready for the next game
+    public void ResetFingerInputs()
     {
         FingerToInputNum[Finger.Pinky] = 0;
         FingerToInputNum[Finger.Ring] = 0;
         FingerToInputNum[Finger.Middle] = 0;
         FingerToInputNum[Finger.Pointer] = 0;
         FingerToInputNum[Finger.Thumb] = 0;
+    }
+
+    public void SetFingerChopping(bool bShouldChop)
+    {
+        foreach (var finger in fingerGameObjects)
+        {
+            finger.GetComponent<Outline>().enabled = bShouldChop;
+            finger.GetComponent<FingerSelect>().enabled = bShouldChop;
+        }
     }
 }
