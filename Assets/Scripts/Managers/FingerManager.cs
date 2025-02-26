@@ -13,6 +13,9 @@ public class FingerManager : MonoBehaviour
         Pinky
     }
 
+    [Header("Camera")]
+    [SerializeField] private CameraManager cameraManager;
+    [SerializeField] private GameObject fingerChopCutscene;
     
     private List<Finger> hand = new List<Finger>();
     private Dictionary<Finger, int> FingerToInputNum = new Dictionary<Finger, int>();
@@ -41,13 +44,17 @@ public class FingerManager : MonoBehaviour
 
     public void RemoveFinger(Finger finger)
     {
+        //removes finger from local list storing which fingers we still have
         hand.Remove(finger);
+        //disables the player from chopping
         SetFingerChopping(false);
+        //moves camera in place for the chop scene
+        cameraManager.EnableCam(fingerChopCutscene);
     }
 
     private void Update()
     {
-        if(currentMinigame != null)
+        if(currentMinigame)
         {
             CheckInputs();
         }
@@ -93,7 +100,6 @@ public class FingerManager : MonoBehaviour
         switch (i)
         {
             case 1:
-                Debug.Log("sending input 1 to minigame");
                 currentMinigame.Input1();
                 break;
             case 2:
@@ -106,7 +112,6 @@ public class FingerManager : MonoBehaviour
                 currentMinigame.Input4();
                 break;
             default:
-                Debug.LogWarning("BroadcastInput() int i is not a valid input number FingerManager.cs");
                 break;
         }
     }
